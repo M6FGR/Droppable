@@ -1,8 +1,0 @@
-{
-  "minecraft:zombie": {
-    "chance": 1.0,
-    "skills": {
-      "epicfight:endurance": 1.0
-    }
-  }
-}
