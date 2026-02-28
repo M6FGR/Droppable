@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Specification-Title: Droppable
+Specification-Vendor: 
+Specification-Version: 1
+Implementation-Title: droppable
+Implementation-Version: 20.0.5
+Implementation-Vendor: 
+Implementation-Timestamp: 2026-02-21T11:25:24+0300
+

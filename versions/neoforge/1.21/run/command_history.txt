@@ -1,0 +1,18 @@
+/summon minecraft:husk
+/gamerule doMobSpawning false
+/summon minecraft:husk
+/reload
+/summon minecraft:husk
+/reload
+/summon minecraft:husk
+/reload
+/summon minecraft:enderman
+/summon minecraft:husk
+/reload
+/summon minecraft:pillager
+/reload
+/summon minecraft:pillager
+/summon minecraft:husk
+/gamemode survival
+/summon minecraft:husk
+/reload
