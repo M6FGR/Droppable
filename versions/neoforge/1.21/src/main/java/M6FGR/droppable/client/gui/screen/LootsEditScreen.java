@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
@@ -32,45 +33,66 @@ public class LootsEditScreen extends Screen {
 
     @Override
     protected void init() {
-        // Start position for the left column
         int leftX = this.width / 2 - 180;
-        int boxWidth = 200; // Standard width for both bars
+        int boxWidth = 200;
+        int bottomY = this.height - 30;
 
-        // 1. Entity ID Bar
+        // 1. Entity ID Bar (Vanilla Only)
         this.entitySearch = new EditBox(this.font, leftX, 40, boxWidth, 20, Component.literal("Entity ID..."));
         this.addRenderableWidget(this.entitySearch);
 
-        // 2. Skill ID Bar (Now same width as Entity ID)
+        // 2. Skill ID Bar
         this.skillSearch = new EditBox(this.font, leftX, 80, boxWidth, 20, Component.literal("Skill ID..."));
         this.addRenderableWidget(this.skillSearch);
 
+        // 3. Add Button
         this.addRenderableWidget(Button.builder(Component.literal("Add"), (button) -> {
             addSkillFromInput();
         }).bounds(leftX + boxWidth + 5, 80, 40, 20).build());
 
+        // 4. Chance Input
         this.chanceInput = new EditBox(this.font, leftX, 120, 60, 20, Component.literal("Chance"));
         this.chanceInput.setValue("0.05");
         this.addRenderableWidget(this.chanceInput);
 
+        // 5. Skill Pool List
         this.skillListWidget = new SkillList(this, leftX + boxWidth + 55, 40, 200, 120);
         this.addRenderableWidget(this.skillListWidget);
 
-        this.addRenderableWidget(Button.builder(Component.literal("Generate Config"), (button) -> {
-            generateConfig();
-        }).bounds(this.width / 2 - 60, 180, 150, 20).build());
+        // --- Bottom Controls ---
 
+        // Done Button (Centered)
+        this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> {
+            this.onClose();
+        }).bounds(this.width / 2 - 100, bottomY, 200, 20).build());
+
+        // Clear Button
         this.addRenderableWidget(Button.builder(Component.literal("Clear"), (button) -> {
             addedSkills.clear();
             skillListWidget.refreshList();
         }).bounds(this.width / 2 - 180, 180, 45, 20).build());
+
+        // Generate Button
+        this.addRenderableWidget(Button.builder(Component.literal("Generate Config"), (button) -> {
+            generateConfig();
+        }).bounds(this.width / 2 - 60, 180, 150, 20).build());
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+
+        String ent = entitySearch.getValue();
+        this.entitySearch.setTextColor(ent.isEmpty() || isEntityValid(ent) ? 0xFFFFFF : 0xFF5555);
+
+        String skl = skillSearch.getValue();
+        this.skillSearch.setTextColor(skl.isEmpty() || isSkillValid(skl) ? 0xFFFFFF : 0xFF5555);
+
+        String chn = chanceInput.getValue();
+        this.chanceInput.setTextColor(chn.isEmpty() || isChanceValid(chn) ? 0xFFFFFF : 0xFF5555);
+
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        // Ghost text focus logic
         if (this.skillSearch.isFocused()) renderGhostText(guiGraphics, this.skillSearch, getTopSkillMatch());
         if (this.entitySearch.isFocused()) renderGhostText(guiGraphics, this.entitySearch, getTopEntityMatch());
 
@@ -79,7 +101,7 @@ public class LootsEditScreen extends Screen {
 
         guiGraphics.drawString(this.font, "Entity ID:", leftX, 30, 0xAAAAAA);
         guiGraphics.drawString(this.font, "Skill:", leftX, 70, 0xAAAAAA);
-        guiGraphics.drawString(this.font, "Chance (0 - 1.0):", leftX, 110, 0xAAAAAA);
+        guiGraphics.drawString(this.font, "Chance (0.01 - 1.0):", leftX, 110, 0xAAAAAA);
         guiGraphics.drawString(this.font, "Pool:", leftX + boxWidth + 55, 30, 0xFFFFFF);
 
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 10, 0xFFFFFF);
@@ -127,7 +149,6 @@ public class LootsEditScreen extends Screen {
 
         class Entry extends ObjectSelectionList.Entry<Entry> {
             private final String skillName;
-
             public Entry(String name) { this.skillName = name; }
 
             @Override
@@ -142,9 +163,13 @@ public class LootsEditScreen extends Screen {
 
     private void generateConfig() {
         String entityId = entitySearch.getValue();
-        float chance;
-        try { chance = Float.parseFloat(chanceInput.getValue()); } catch (NumberFormatException e) { chance = 0.05f; }
-        if (entityId.isEmpty() || addedSkills.isEmpty()) return;
+        String chanceStr = chanceInput.getValue();
+
+        if (!isEntityValid(entityId) || !isChanceValid(chanceStr) || addedSkills.isEmpty()) {
+            return; // Block generation if red
+        }
+
+        float chance = Float.parseFloat(chanceStr);
         PacketDistributor.sendToServer(new DataGeneratorPayLoad(entityId, addedSkills, chance));
         this.onClose();
     }
@@ -172,6 +197,31 @@ public class LootsEditScreen extends Screen {
     private String getTopEntityMatch() {
         String input = this.entitySearch.getValue().toLowerCase();
         if (input.isEmpty()) return "";
-        return BuiltInRegistries.ENTITY_TYPE.keySet().stream().map(ResourceLocation::toString).filter(name -> name.startsWith(input)).findFirst().orElse("");
+
+        return BuiltInRegistries.ENTITY_TYPE.keySet().stream()
+                .filter(location -> location.getNamespace().equals("minecraft"))
+                .map(ResourceLocation::getPath)
+                .filter(name -> name.startsWith(input))
+                .findFirst()
+                .orElse("");
+    }
+
+    private boolean isEntityValid(String input) {
+        return BuiltInRegistries.ENTITY_TYPE.keySet().stream()
+                .anyMatch(loc -> loc.getNamespace().equals("minecraft") && loc.getPath().equals(input));
+    }
+
+    private boolean isSkillValid(String input) {
+        return EpicFightRegistries.SKILL.stream()
+                .anyMatch(skill -> skill.getRegistryName().toString().equals(input));
+    }
+
+    private boolean isChanceValid(String input) {
+        try {
+            float f = Float.parseFloat(input);
+            return f > 0.0f && f <= 1.0f;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

@@ -1,6 +1,8 @@
 package M6FGR.droppable.main;
 
 import M6FGR.droppable.client.gui.screen.LootsEditScreen;
+import M6FGR.droppable.cls.ILoadableClass;
+import M6FGR.droppable.compat.CDMoveSetCompat;
 import M6FGR.droppable.network.DataGeneratorPayLoad;
 import M6FGR.droppable.util.ServerFileExporter;
 import M6FGR.droppable.world.loot.EpicFightLoots;
@@ -9,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;

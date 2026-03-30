@@ -67,7 +67,7 @@ public class EpicFightLoots {
         int dropChance = 100 + modifier;
         int antiDropChance = Math.max(1, 100 - modifier);
         float dropChanceModifier = (float) dropChance / (float) antiDropChance;
-        if (dropChance < 0) {
+        if (dropChance <= 0) {
             Droppable.LOGGER.warning("Skillbook drop chance is negative! Check the config.");
         }
 
