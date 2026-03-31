@@ -156,7 +156,16 @@ dependencies {
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // base EFM
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:7446493")
+    // EFS-ISS
+    implementation fg.deobf("curse.maven:epic-fight-skill-irons-spells-n-spellbooks-1454101:7644948")
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:7691158")
+    implementation fg.deobf("curse.maven:curios-309927:6418456")
+    implementation fg.deobf("curse.maven:geckolib-388172:7553267")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    // Dodge Parry Reward
+    implementation fg.deobf("curse.maven:epic-fight-dodge-parry-reward-1304607:7692764")
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")

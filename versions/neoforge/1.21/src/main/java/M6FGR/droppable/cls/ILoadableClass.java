@@ -2,26 +2,17 @@ package M6FGR.droppable.cls;
 
 import M6FGR.droppable.main.Droppable;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModList;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforgespi.language.ModFileScanData;
-import org.objectweb.asm.Type;
 import yesman.epicfight.main.EpicFightSharedConstants;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-/**
- * Interface for easy mod event registration.
- * Handles ModBus, NeoForgeBus, and physical Side-specific setup.
- * * @author M6FGR
- */
 public interface ILoadableClass {
     Set<Class<? extends ILoadableClass>> LOADED_CLASSES = new HashSet<>();
 
@@ -42,8 +33,8 @@ public interface ILoadableClass {
             Constructor<? extends ILoadableClass> loadableCons = loadableClass.getConstructor();
             ILoadableClass loadableIns = loadableCons.newInstance();
 
-            loadableIns.onModRegistery(bus);
-            loadableIns.onNeoForgeRegistery(NeoForge.EVENT_BUS);
+            loadableIns.onModRegistry(bus);
+            loadableIns.onNeoForgeRegistry(NeoForge.EVENT_BUS);
 
             bus.addListener(loadableIns::onModCommonSetupEvent);
 
@@ -102,8 +93,8 @@ public interface ILoadableClass {
     default void onModClientEvents(IEventBus modBus) {}
 
     /** Use to register listeners to the global NeoForge.EVENT_BUS. Called Directly. */
-    default void onNeoForgeRegistery(IEventBus neoForgeBus) {}
+    default void onNeoForgeRegistry(IEventBus neoForgeBus) {}
 
     /** Primary method to register Items, Blocks, Entities, etc... Called Directly. */
-    default void onModRegistery(IEventBus modBus) {}
+    default void onModRegistry(IEventBus modBus) {}
 }

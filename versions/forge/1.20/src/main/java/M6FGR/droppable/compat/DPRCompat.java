@@ -64,7 +64,10 @@ public class DPRCompat implements ICompatModule {
             1.0F, "dodge_parry_reward:resist3",
             1.0F, "dodge_parry_reward:resist4",
     };
-
+    // 0.015F = 1.5%
+    // 0.025F = 2.5%
+    // 0.02F = 2%
+    // 0.8F = 80%
     static {
         addLoot(EntityType.ZOMBIE, 0.015F, dprSkills);
         addLoot(EntityType.HUSK, 0.015F, dprSkills);

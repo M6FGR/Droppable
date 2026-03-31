@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import yesman.epicfight.api.forgeevent.SkillLootTableRegistryEvent;
 import yesman.epicfight.config.CommonConfig;
-import yesman.epicfight.data.loot.EpicFightLootTables;
 import yesman.epicfight.data.loot.function.SetSkillFunction;
 import yesman.epicfight.world.item.EpicFightItems;
 

@@ -56,7 +56,10 @@ public class EFSISSCompat implements ICompatModule {
             new SkillData(1.0F, "efs_iss:mana_shield")
     );
 
-    // The Master Mob List
+    // 0.015F = 1.5%
+    // 0.025F = 2.5%
+    // 0.02F = 2%
+    // 0.9F = 90%
     private static final List<MobDrop> TARGET_MOBS = List.of(
             new MobDrop(EntityType.ZOMBIE, 0.015F),
             new MobDrop(EntityType.HUSK, 0.015F),
